@@ -1,0 +1,68 @@
+{
+    "sonic": [
+        "DTHM",
+        "DTC",
+        "DTCO"
+    ],
+    "shearsonic": [
+        "DTSM",
+        "DTS"
+    ],
+    "gr": [
+        "GR",
+        "GRCFM"
+    ],
+    "resdeep": [
+        "RT_HRLT",
+        "None",
+        "ILD",
+        "M2R6",
+        "RACELM"
+    ],
+    "resshal": [
+        "None",
+        "M2RX",
+        "RACEHM"
+    ],
+    "density": [
+        "RHOB",
+        "None",
+        "BDCFM",
+        "RHO8",
+        "ZDEN"
+    ],
+    "neutron": [
+        "NPCKSFM",
+        "CNCF",
+        "TNPH",
+        "NPHI"
+    ],
+    "pe": [
+        "PE",
+        "PEFLA",
+        "None",
+        "none",
+        "DPEFM"
+    ],
+    "ROP": [
+        "ROPAVG"
+    ],
+    "RPM": [
+        "SURFRPM"
+    ],
+    "WOB": [
+        "WOBAVG"
+    ],
+    "ECD": [
+        "ACTECDM"
+    ],
+    "BIT": [
+        "BIT"
+    ],
+    "TORQUE": [
+        "TORQUEAV"
+    ],
+    "FLOWRATE": [
+        "FLOWIN"
+    ]
+}
