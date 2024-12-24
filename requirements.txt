@@ -1,3 +1,4 @@
 streamlit
 stresslog
 setuptools
+openpyxl

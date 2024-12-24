@@ -6,6 +6,7 @@ See the GNU Affero General Public License for more details: <https://www.gnu.org
 """
 
 import streamlit as st
+import io
 
 if 'las_file' not in st.session_state or st.session_state.las_file is None or 'outputdata' not in st.session_state:
     st.switch_page("_1_Import.py")
@@ -30,6 +31,19 @@ if 'outputdata' in st.session_state and st.session_state.outputdata[0] is not No
                     mime="text/csv",
                     use_container_width=True
                 )
+                
+                buffer = io.BytesIO()
+                st.session_state.outputdata[0].to_excel(buffer, index=False)
+                buffer.seek(0)
+                excel_data = buffer.getvalue()
+
+                st.download_button(
+                    label="Download data as Excel",
+                    data=excel_data,
+                    file_name="WellData.xslx",
+                    mime="text/csv",
+                    use_container_width=True
+                )
                
                 # Streamlit download button
                 #st.session_state.outputdata[1]
@@ -42,6 +56,11 @@ if 'outputdata' in st.session_state and st.session_state.outputdata[0] is not No
                     mime="text/plain",
                     use_container_width=True
                 )
+                
+                if st.button("Start over fresh", use_container_width=True):
+                    for key in st.session_state.keys():
+                        del st.session_state[key]
+                    st.rerun()
                 
     with cols[1]:
         with st.container(height=724):
