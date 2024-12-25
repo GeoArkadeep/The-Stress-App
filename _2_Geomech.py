@@ -346,15 +346,17 @@ if 'wellobj' in st.session_state:
                 with st.container(height=719):
                     default_tracks = [[st.session_state.alias['gr'],"Poisson_Ratio"],#"Poisson_Ratio"],
                                               [st.session_state.alias['sonic'],"DTCT"],
+                                              ["UCS_Horsud"],
                                               ["OBG_AMOCO","PP_GRADIENT","SHmin_DAINES","FracGrad"],
                                               ["MUD_PRESSURE","SHmin_PRESSURE","SHmax_PRESSURE","OVERBURDEN_PRESSURE","GEOPRESSURE","FracPressure"],
-                                              ["UCS_Horsud"]
+                                              
                     ]
                     #st.write(default_tracks)
                     default_curve_ranges = [{st.session_state.alias['gr']:{"left":0,"right":150},
                                             "Poisson_Ratio":{"left":0.1,"right":0.4}},
                                             {st.session_state.alias['sonic']:{"left":240,"right":40},
                                              "DTCT":{"left":240,"right":40}},
+                                            {"UCS_Horsud":{"left":0,"right":100}},
                                             {"OBG_AMOCO":{"left":0,"right":3},
                                              "PP_GRADIENT":{"left":0,"right":3},
                                              "SHmin_DAINES":{"left":0,"right":3},
@@ -371,7 +373,7 @@ if 'wellobj' in st.session_state:
                                              "HYDROSTATIC_PRESSURE":{"left":0,"right":10000},
                                              "OVERBURDEN_PRESSURE":{"left":0,"right":10000}
                                              },
-                                            {"UCS_Horsud":{"left":0,"right":100}}
+                                            
                     ]
                     default_curve_properties = {st.session_state.alias['gr']:{"color":"#276b02","thickness":2.0,"line_style":"solid","logarithmic":False},
                                                 #"Poisson_Ratio":{"color":"#818181","thickness":1.0,"line_style":"solid","logarithmic":False},
@@ -410,7 +412,7 @@ if 'wellobj' in st.session_state:
                                     4: {'UCS':{'color': 'green', 'size': 5, 'symbol': 'circle'}},
 
                                 },
-                                vert_height,
+                                680,
                                 header_height = 200,
                                 indexkey='TVDM'
                             )

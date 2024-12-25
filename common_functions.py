@@ -36,9 +36,9 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         rows=2,
         cols=num_tracks,
         shared_yaxes=True,
-        horizontal_spacing=0.02,
+        horizontal_spacing=0.00,
         vertical_spacing=0,
-        row_heights=[annotation_height, plot_height]
+        row_heights=[annotation_height, plot_height],
     )
     
     # Plot curves and add annotations for each track
@@ -145,7 +145,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                 fig.add_annotation(
                     x=0.5,
                     y=annotation_y + offset_y,
-                    text=f"{curve_name}",
+                    text = f"{curve_name[:10]}",
                     showarrow=False,
                     font=dict(color=color),
                     xref=f"x{track_idx + 1}",
@@ -311,10 +311,10 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         width=200 * num_tracks,
         plot_bgcolor='rgba(0,0,0,0)',#'white',
         paper_bgcolor='rgba(0,0,0,0)',#'white',
-        margin=dict(t=0, b=10,l=0,r=10),
+        margin=dict(t=0, b=0,l=10,r=10),
         showlegend=False,
         # Lock x-axis zooming
-        #xaxis=dict(fixedrange=True),
+        xaxis=dict(fixedrange=True),
         dragmode='zoom'  # This enables panning instead of box zoom
     )
     
@@ -325,28 +325,16 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         
     fig.update_yaxes(
         row=2,
-        #col=i+1,
         autorange="reversed",
-        showgrid=True,
-        gridcolor="rgba(128, 128, 128, 0.25)",
-        title=title_text,
-        showline=True,
-        mirror=True,
-        linewidth=0.5,
-        linecolor='grey',
-        fixedrange=False  # Allow y-axis zooming
     )
     
     # Hide the annotation area y-axis
     fig.update_yaxes(
         row=1,
         #visible=False
-        showline=True,
+        #showline=True,
         showgrid=False,
         showticklabels=False,
-        linewidth=0,
-        linecolor='grey',
-        mirror=True,
         range=[2, 3]
     )
     
@@ -370,12 +358,12 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         #col=i+1,
         range=[0, 1],
         showgrid=False,
-        showline=True,
+        #showline=True,
         linewidth=1,
         linecolor='grey',
         mirror=True,
         showticklabels=False,
-        #fixedrange=True  # Lock x-axis zooming
+        fixedrange=True  # Lock x-axis zooming
     )
     
     # Handle the annotation area x-axis
@@ -391,9 +379,48 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         mirror=True,
         #fixedrange=True  # Lock x-axis zooming
     )
-        
-    #fig.update_layout(height=vert_height)
+    
+    # Get existing shapes (annotation lines) from the figure
+    existing_shapes = list(fig.layout.shapes) if fig.layout.shapes else []
+    
+    # Create border shapes
+    border_shapes = [
+        # Main outer rectangle
+        dict(
+            type="rect",
+            xref="paper",
+            yref="paper",
+            x0=0,
+            y0=0,
+            x1=1,
+            y1=1,
+            line=dict(width=1, color="grey")
+        ),
 
+    ]
+    
+    # Add vertical lines at track boundaries
+    for i in range(num_tracks + 1):  # +1 to include the rightmost boundary
+        x_pos = i / num_tracks  # Calculate position in paper coordinates
+        border_shapes.append(
+            dict(
+                type="line",
+                xref="paper",
+                yref="paper",
+                x0=x_pos,
+                y0=-0.1,
+                x1=x_pos,
+                y1=1,
+                line=dict(width=1, color="grey")
+            )
+        )
+    
+    # Combine existing shapes with border shapes
+    all_shapes = existing_shapes + border_shapes
+    
+    # Update layout with all shapes
+    fig.update_layout(shapes=all_shapes)
+    
     return fig
 
 

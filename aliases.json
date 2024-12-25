@@ -1,48 +1,53 @@
 {
     "sonic": [
-        "DTC",
         "DTHM",
+        "DTC",
+        "AC",
         "DTCO"
     ],
     "shearsonic": [
-        "DTS",
-        "DTSM"
+        "DTSM",
+        "DTS"
     ],
     "gr": [
-        "GR",
-        "GRCFM"
+        "GRCFM",
+        "GR"
     ],
     "resdeep": [
-        "RACELM",
-        "None",
+        "M2R6",
         "RT_HRLT",
+        "None",
+        "RACELM",
         "ILD",
-        "M2R6"
+        "RDEP"
     ],
     "resshal": [
-        "RACEHM",
         "None",
-        "M2RX"
+        "RACEHM",
+        "M2RX",
+        "RMED"
     ],
     "density": [
-        "BDCFM",
+        "ZDEN",
+        "DEN",
         "None",
         "RHO8",
-        "ZDEN",
+        "BDCFM",
         "RHOB"
     ],
     "neutron": [
-        "TNPH",
+        "NEU",
         "CNCF",
-        "NPCKSFM",
-        "NPHI"
+        "TNPH",
+        "NPHI",
+        "NPCKSFM"
     ],
     "pe": [
-        "PE",
-        "None",
         "PEFLA",
         "none",
-        "DPEFM"
+        "DPEFM",
+        "None",
+        "PE"
     ],
     "ROP": [
         "ROPAVG"

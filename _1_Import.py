@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import pint
 from welly import Well
+from welly import Curve
 
 import stresslog as lsd
 #st.set_page_config(layout="wide")
@@ -163,8 +164,8 @@ else:
                     string_data = st.session_state.las_file.getvalue()
                 well = Well.from_las(string_data)
                 st.session_state.wellobj = well
-                curves = well.df()
-                st.session_state.curve_data = curves
+                st.session_state.curve_data = well.df()
+                curves = st.session_state.wellobj.df()
                 
                 with st.container():
                     # Evaluate required aliases before drawing the widget
@@ -214,16 +215,19 @@ else:
                         st.write(st.session_state.alias)
                     #uploaded_file = st.file_uploader("Upload a LAS file", type=["las"])
                     #uploaded_file = st.session_state.las_file+
+                    
+                    neutron2 = st.session_state.wellobj.data[st.session_state.alias['neutron']].values
+
                     default_tracks = [[st.session_state.alias['gr']],
                                       [st.session_state.alias['resdeep'],st.session_state.alias['resshal']],
-                                      [st.session_state.alias['sonic'],st.session_state.alias['density'],st.session_state.alias['neutron']]
+                                      [st.session_state.alias['sonic'],st.session_state.alias['neutron'],st.session_state.alias['density']]
                     ]
                     #st.write(default_tracks)
                     default_curve_ranges = [{st.session_state.alias['gr']:{"left":0,"right":150}},
                                             {st.session_state.alias['resdeep']:{"left":0.02,"right":200},
                                              st.session_state.alias['resshal']:{"left":0.02,"right":200}},
                                             {st.session_state.alias['density']:{"left":1.8,"right":2.8},
-                                             st.session_state.alias['neutron']:{"left":0.54,"right":-0.06},
+                                             st.session_state.alias['neutron']:{"left":0.54,"right":-0.06} if np.nanmean(neutron2)<1 else {"left":54.0,"right":-6.0},
                                              st.session_state.alias['sonic']:{"left":140,"right":40}}
                     ]
                     default_curve_properties = {st.session_state.alias['gr']:{"color":"#276b02","thickness":2.0,"line_style":"solid","logarithmic":False},
@@ -245,7 +249,7 @@ else:
                         with st.expander("Track Configuration", expanded=False):
                             num_tracks = st.number_input("Number of Tracks", min_value=1, max_value=6, value=len(default_tracks))
                             vert_height = st.number_input(
-                                "Set plot height in pixels", value=685, placeholder="How tall you want the plot?"
+                                "Set plot height in pixels", value=680, placeholder="How tall you want the plot?"
                             )
                         
 
@@ -444,7 +448,11 @@ else:
                 #st.session_state.wellobj.location.add_deviation(st.session_state.data_array[0])
                 #fullwell = getwelldev(string_data,st.session_state.data_array[0])
                 st.session_state.wellobj = getwelldev(wella=resample_well(string_las=string_data,step=5),deva=st.session_state.data_array[0])#resample_well(fullwell,5)
-                
+                neutron = st.session_state.wellobj.data[st.session_state.alias['neutron']].values
+                corneu = neutron/100 if np.nanmean(neutron)>1 else neutron
+                md = st.session_state.wellobj.data["MD"].values
+                st.session_state.wellobj.data[st.session_state.alias['neutron']] = Curve(corneu, mnemonic=st.session_state.alias['neutron'],units='v/v', index=md, null=-999.25)
+
                 #st.session_state.wellobj.location
                 traj = st.session_state.wellobj.location.trajectory()
                 
@@ -461,16 +469,10 @@ else:
                 # Ensure DEPT column exists and is properly named
                 if 'DEPT' not in curves.columns and curves.index.name == 'DEPT':
                     curves = curves.reset_index()
-                try:
-                    if np.nanmean(curves[st.session_state.alias['NPHI']])>1:
-                        curves[st.session_state.alias['NPHI']]=curves[st.session_state.alias['NPHI']]/100
-                except:
-                    pass
+
                 # Save curves to session state
                 #st.session_state.curve_data = curves
-
-                
-                    
+    
                 #detected_aliases = auto_detect_aliases(st.session_state.curve_data)
                 #st.session_state.aliases.update(detected_aliases)
                 #st.write("LAS file parsed successfully!")

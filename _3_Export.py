@@ -56,8 +56,8 @@ if 'outputdata' in st.session_state and st.session_state.outputdata[0] is not No
                     mime="text/plain",
                     use_container_width=True
                 )
-                
-                if st.button("Start over fresh", use_container_width=True):
+                "---"
+                if st.button("Start over fresh", type="primary", use_container_width=True):
                     for key in st.session_state.keys():
                         del st.session_state[key]
                     st.rerun()
