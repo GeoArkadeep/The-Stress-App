@@ -145,7 +145,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                 fig.add_annotation(
                     x=0.5,
                     y=annotation_y + offset_y,
-                    text = f"{curve_name[:10]}",
+                    text = f"{curve_name[:5]}",
                     showarrow=False,
                     font=dict(color=color),
                     xref=f"x{track_idx + 1}",
