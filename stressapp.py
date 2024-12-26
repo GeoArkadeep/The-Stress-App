@@ -8,6 +8,17 @@ See the GNU Affero General Public License for more details: <https://www.gnu.org
 import streamlit as st
 st.set_page_config(layout="wide")
 
+def changeUI():
+    if st.session_state.mobile_version:
+        st.session_state.mobile_version = False
+    else:
+        st.session_state.mobile_version = True
+# Toggle for mobile version in the sidebar
+
+if "mobile_version" not in st.session_state:
+    st.session_state.mobile_version = False
+st.sidebar.toggle("Mobile UI", on_change=changeUI)
+
 
 input_page = st.Page("_1_Import.py", title="Import Data", icon=":material/upload_file:")
 geomech_page = st.Page("_2_Geomech.py", title="Calculate Stresses", icon=":material/modeling:")
