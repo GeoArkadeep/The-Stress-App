@@ -451,7 +451,8 @@ else:
                     #if st.session_state.data_array[0] is not None:
                     #st.session_state.wellobj.location.add_deviation(st.session_state.data_array[0])
                     #fullwell = getwelldev(string_data,st.session_state.data_array[0])
-                    st.session_state.wellobj = getwelldev(wella=resample_well(string_las=string_data,step=5),deva=st.session_state.data_array[0])#resample_well(fullwell,5)
+                    step = 5
+                    st.session_state.wellobj = getwelldev(wella=resample_well(string_las=string_data,step=step),deva=st.session_state.data_array[0], step=step)#resample_well(fullwell,5)
                     neutron = st.session_state.wellobj.data[st.session_state.alias['neutron']].values
                     corneu = neutron/100 if np.nanmean(neutron)>1 else neutron
                     md = st.session_state.wellobj.data["MD"].values

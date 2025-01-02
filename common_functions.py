@@ -456,7 +456,7 @@ def resample_well(string_las = None, well=None, step=5):
     return well
 
 #Function to get well deviation
-def getwelldev(string_las=None,wella=None,deva=None):
+def getwelldev(string_las=None,wella=None,deva=None,step=None):
     if wella is None:
         wella = Well.from_las(string_las, index = "m")
     depth_track = wella.df().index
@@ -466,6 +466,8 @@ def getwelldev(string_las=None,wella=None,deva=None):
         start_depth = wella.df().index[0]
         final_depth = wella.df().index[-1]
         spacing = ((wella.df().index.values[-1]-wella.df().index.values[0])/len(wella.df().index.values))
+        if step is not None:
+            spacing = step
         #print("Sample interval is :",spacing)
         padlength = int(start_depth/spacing)
         #print(padlength)
@@ -491,6 +493,8 @@ def getwelldev(string_las=None,wella=None,deva=None):
         start_depth = wella.df().index[0]
         final_depth = wella.df().index[-1]
         spacing = ((wella.df().index.values[-1]-wella.df().index.values[0])/len(wella.df().index.values))
+        if step is not None:
+            spacing = step
         #print("Sample interval is :",spacing)
         padlength = int(start_depth/spacing)
         #print(padlength)
