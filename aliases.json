@@ -1,9 +1,10 @@
 {
     "sonic": [
-        "DTHM",
-        "DTCO",
+        "HAC",
         "DTC",
-        "AC"
+        "DTHM",
+        "AC",
+        "DTCO"
     ],
     "shearsonic": [
         "DTSM",
@@ -22,10 +23,11 @@
         "ILD"
     ],
     "resshal": [
-        "None",
-        "M2RX",
         "RACEHM",
-        "RMED"
+        "M2RX",
+        "RMED",
+        "None",
+        "HRS"
     ],
     "density": [
         "DEN",
@@ -40,6 +42,7 @@
         "NPHI",
         "NEU",
         "NPCKSFM",
+        "PHIT",
         "CNCF"
     ],
     "pe": [

@@ -500,7 +500,8 @@ else:
                             curve_properties,
                             track_grids,
                             None,None,
-                            vert_height
+                            vert_height,
+                            style='linear'
                         )
                         
                         #fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')

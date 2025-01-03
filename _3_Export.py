@@ -15,10 +15,10 @@ if 'las_file' not in st.session_state or st.session_state.las_file is None or 'o
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode("utf-8")
-if 'outputdata' in st.session_state and st.session_state.outputdata[0] is not None:
-    if st.session_state.mobile_version:
-        mobile_export()
-    else:
+if not st.session_state.mobile_version:
+    mobile_export()
+else:
+    if 'outputdata' in st.session_state and st.session_state.outputdata[0] is not None:
         cols = st.columns([1,2])
         with cols[0]:
             with st.container(height=724):

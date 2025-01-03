@@ -14,7 +14,7 @@ import pint
 from welly import Well
 import json
 
-def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_properties, track_grids, sparse_points=None, sparse_point_properties=None, vert_height=1000, header_height=150, indexkey='DEPT'):
+def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_properties, track_grids, sparse_points=None, sparse_point_properties=None, vert_height=1000, header_height=150, indexkey='DEPT', style='hv'):
     """
     Create a well log plot with multiple tracks sharing an inverted depth axis.
     Supports individual scaling, styling, and logarithmic transformation for each curve.
@@ -30,15 +30,16 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         yindex = curves[indexkey]
     except:
         yindex = curves.index.values
-    
+    widths = [1, 0.35] + [1] * (num_tracks-1)
     # Create figure
     fig = make_subplots(
         rows=2,
-        cols=num_tracks,
+        cols=num_tracks+1,
         shared_yaxes=True,
         horizontal_spacing=0.00,
         vertical_spacing=0,
         row_heights=[annotation_height, plot_height],
+        column_widths=widths
     )
     
     # Plot curves and add annotations for each track
@@ -91,11 +92,11 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                             dash=line_style,
                             width=thickness
                         ),
-                        line_shape='hv',
+                        line_shape=style,
                         showlegend=False
                     ),
                     row=2,
-                    col=track_idx + 1
+                    col=(track_idx + 2) if track_idx>0 else track_idx+1
                 )
                 
                 # Wrap Curves
@@ -110,13 +111,13 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                             dash=line_style,
                             width=thickness
                         ),
-                        line_shape='hv',
+                        line_shape=style,
                         opacity=0.3,  # Ghost curve transparency
                         hoverinfo='skip',  # Do not show hover text for ghost curve
                         showlegend=False
                     ),
                     row=2,
-                    col=track_idx + 1
+                    col=(track_idx + 2) if track_idx>0 else track_idx+1
                 )
                 
                 fig.add_trace(
@@ -129,13 +130,13 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                             dash=line_style,
                             width=thickness
                         ),
-                        line_shape='hv',
+                        line_shape=style,
                         opacity=0.3,  # Ghost curve transparency
                         hoverinfo='skip',  # Do not show hover text for ghost curve
                         showlegend=False
                     ),
                     row=2,
-                    col=track_idx + 1
+                    col=(track_idx + 2) if track_idx>0 else track_idx+1
                 )
                 
                 # Add annotation elements
@@ -148,7 +149,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                     text = f"{curve_name[:5]}",
                     showarrow=False,
                     font=dict(color=color),
-                    xref=f"x{track_idx + 1}",
+                    xref=f"x{(track_idx + 2) if track_idx>0 else track_idx+1}",
                     yref="paper",
                     xanchor="center"
                 )
@@ -165,7 +166,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                         dash=line_style,
                         width=thickness
                     ),
-                    xref=f"x{track_idx + 1}",
+                    xref=f"x{(track_idx + 2) if track_idx>0 else track_idx+1}",
                     yref="paper"
                 )
                 
@@ -180,7 +181,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                     text=f"{display_left:.2f}",
                     showarrow=False,
                     font=dict(color=color, size=10),
-                    xref=f"x{track_idx + 1}",
+                    xref=f"x{(track_idx + 2) if track_idx>0 else track_idx+1}",
                     yref="paper",
                     xanchor="left"
                 )
@@ -192,7 +193,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                     text=f"{display_right:.2f}",
                     showarrow=False,
                     font=dict(color=color, size=10),
-                    xref=f"x{track_idx + 1}",
+                    xref=f"x{(track_idx + 2) if track_idx>0 else track_idx+1}",
                     yref="paper",
                     xanchor="right"
                 )
@@ -226,7 +227,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                         width=1
                     ),
                     row=2,
-                    col=track_idx + 1
+                    col=(track_idx + 2) if track_idx>0 else track_idx+1
                 )
             
     def normalize_sparse_point(point_value, curve_range, is_log=False):
@@ -302,7 +303,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
                         showlegend=False
                     ),
                     row=2,
-                    col=track_idx + 1
+                    col=(track_idx + 2) if track_idx>0 else track_idx+1
                 )
 
     # Update layout
@@ -326,7 +327,9 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
     fig.update_yaxes(
         row=2,
         autorange="reversed",
+        showticklabels=False
     )
+        # Then show them specifically for row 2, column 2
     
     # Hide the annotation area y-axis
     fig.update_yaxes(
@@ -399,16 +402,24 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
 
     ]
     
+    
+    total_width = sum(widths)
+    positions = [0]  # Start with left boundary
+    current_pos = 0
+
+    for width in widths:
+        current_pos += width/total_width
+        positions.append(current_pos)
+
     # Add vertical lines at track boundaries
-    for i in range(num_tracks + 1):  # +1 to include the rightmost boundary
-        x_pos = i / num_tracks  # Calculate position in paper coordinates
+    for x_pos in positions:
         border_shapes.append(
             dict(
                 type="line",
                 xref="paper",
                 yref="paper",
                 x0=x_pos,
-                y0=-0.1,
+                y0=0,
                 x1=x_pos,
                 y1=1,
                 line=dict(width=1, color="grey")
@@ -420,6 +431,15 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
     
     # Update layout with all shapes
     fig.update_layout(shapes=all_shapes)
+    fig.update_yaxes(
+        row=2, 
+        col=1,
+        showticklabels=True,
+        ticks='outside',  # Make sure ticks are visible
+        side='right',      # Ensure labels are on the left side
+        tickmode='auto',  # Let Plotly automatically determine tick positions
+        showgrid=False    # Keep consistent with current design
+    )
     
     return fig
 

@@ -72,7 +72,8 @@ def mobile_geomech(defaults):
 
             st.session_state.outputdata[0], st.session_state.outputdata[1], st.session_state.outputdata[2], st.session_state.outputdata[3], st.session_state.outputdata[4], st.session_state.outputdata[5], st.session_state.outputdata[6],st.session_state.lastdoi = lsd.plotPPzhang(
                 st.session_state.wellobj, rhoappg=st.session_state.rhoappg, lamb=st.session_state.lamb,
-                ul_exp=st.session_state.ul_exp, ul_depth=st.session_state.ul_depth, a=st.session_state.a,
+                ul_exp=st.session_state.lamb if st.session_state.ul_depth == 0 else st.session_state.ul_exp,
+                ul_depth=st.session_state.ul_depth, a=st.session_state.a,
                 nu=st.session_state.nu, sfs=st.session_state.sfs, window=1, zulu=0, tango=20000,
                 dtml=st.session_state.dtml, dtmt=st.session_state.dtmt, water=st.session_state.water,
                 underbalancereject=st.session_state.underbalancereject, tecb=st.session_state.tecb,
@@ -82,47 +83,87 @@ def mobile_geomech(defaults):
                 offset=st.session_state.offset, strike=st.session_state.strike, dip=st.session_state.dip, mudtemp=st.session_state.mudtemp,
                 mwvalues=mwvalues, forms=st.session_state.data_array[1],
                 flags=st.session_state.data_array[4], lithos=st.session_state.data_array[3],writeFile=False,attrib=attrib,aliasdict={key: [value] for key, value in st.session_state.alias.items()},
+                program_option=[300,st.session_state.program_option,0,0,0],
+                res0=st.session_state.res0, be=st.session_state.be, ne=st.session_state.ne,
+                dex0=st.session_state.dex0, de=st.session_state.de, nde=st.session_state.nde,
             )
 
         with st.expander("Pore Pressure Zhang Parameters", expanded=False):
             # Compaction Parameters
+            ppoptions = [
+                "Zhang", "Eaton", "Dexp", "Average of All",
+                "Zhang > Eaton > Dexp", "Zhang > Dexp > Eaton",
+                "Eaton > Zhang > Dexp", "Eaton > Dexp > Zhang",
+                "Dexp > Zhang > Eaton", "Dexp > Eaton > Zhang"
+            ]
+
+            st.session_state.program_option = st.selectbox("Pore Pressure Algorithm", range(len(ppoptions)), format_func=lambda x: ppoptions[x], index=4, key = "program_option_input")
+         
             lamb = st.number_input("Compaction exponent (lambda)", 
                                    value=st.session_state.lamb, 
-                                   format="%.4f", 
+                                   format="%.6f", 
                                    key="lamb_input")
             ul_exp = st.number_input("Unloading compaction exponent (ul_exp)", 
                                      value=st.session_state.ul_exp, 
-                                     format="%.4f", 
+                                     format="%.6f", 
                                      key="ul_exp_input")
-            ul_depth = st.number_input("Unloading depth (ul_depth)", 
+            ul_depth = st.number_input("Max velocity depth (ul_depth)", 
                                        value=st.session_state.ul_depth, 
                                        format="%.2f", 
                                        key="ul_depth_input")
 
             # Sonic travel times
-            dtml = st.number_input("Lower sonic travel time (dtml)", 
+            dtml = st.number_input("Sonic travel time at mudline (dtml)", 
                                    value=st.session_state.dtml, 
                                    format="%.1f", 
                                    key="dtml_input")
-            dtmt = st.number_input("Upper sonic travel time (dtmt)", 
+            dtmt = st.number_input("Sonic travel time of matrix (dtmt)", 
                                    value=st.session_state.dtmt, 
                                    format="%.1f", 
                                    key="dtmt_input")
-
+            
+            # Eatons Parameters
+            res0 = st.number_input("Resistivity at mudline (res0)", 
+                                   value=st.session_state.get("res0", 0.98), 
+                                   format="%.2f", 
+                                   key="res0_input")
+            be = st.number_input("Compaction exponent resistivity (be)", 
+                                 value=st.session_state.get("be", 0.00014), 
+                                 format="%.6f", 
+                                 key="be_input")
+            ne = st.number_input("Eaton's parameter (ne)", 
+                                 value=st.session_state.get("ne", 0.6), 
+                                 format="%.2f", 
+                                 key="ne_input")
+            
+            # Dexp Parameters
+            dex0 = st.number_input("D.Exp at mudline (dex0)", 
+                                   value=st.session_state.get("dex0", 0.5), 
+                                   format="%.2f", 
+                                   key="dex0_input")
+            de = st.number_input("Compaction exponent D.exp (de)", 
+                                 value=st.session_state.get("de", 0.00014), 
+                                 format="%.6f", 
+                                 key="de_input")
+            nde = st.number_input("D.exp fitting parameter (nde)", 
+                                  value=st.session_state.get("nde", 0.5), 
+                                  format="%.2f", 
+                                  key="nde_input")
+              
             # Water-related parameter
-            water = st.number_input("Water parameter (water)", 
+            water = st.number_input("Water density (water)", 
                                     value=st.session_state.water, 
                                     format="%.2f", 
                                     key="water_input")
 
             # Underbalance rejection
-            underbalancereject = st.number_input("Underbalance rejection (underbalancereject)", 
+            underbalancereject = st.number_input("Minimum PP gradient (underbalancereject)", 
                                                  value=st.session_state.underbalancereject, 
                                                  format="%.1f", 
                                                  key="underbalancereject_input")
 
             # Shear failure slope
-            sfs = st.number_input("Shear failure slope (sfs)", 
+            sfs = st.number_input("Shale flag cutoff (sfs)", 
                                   value=st.session_state.sfs, 
                                   format="%.2f", 
                                   key="sfs_input")
@@ -209,6 +250,8 @@ def mobile_geomech(defaults):
                                   value=st.session_state.mudtemp, 
                                   format="%.2f", 
                                   key="mudtemp_input")
+        plotheight = st.number_input("Plot Height in pixels", 
+                                  value=2000)
 
     st.write("Constraints")
     st.session_state.constraints = st.data_editor(
@@ -231,7 +274,7 @@ def mobile_geomech(defaults):
     )
     #if st.session_state.constraints is not None:
         #st.write(st.session_state.constraints)
-    point_tracks = {'Fracture Pressure': 3, 'Pore Pressure': 3, 'Fracture Gradient': 2, 'Pore Pressure Gradient': 2}
+    point_tracks = {'Fracture Pressure': 4, 'Pore Pressure': 4, 'Fracture Gradient': 3, 'Pore Pressure Gradient': 3}
 
     # Point Data Dict for plotting
     result_dict = {}
@@ -254,7 +297,7 @@ def mobile_geomech(defaults):
             pass
 
     # Process the st.session_state.data_array[5] dataframe
-    point_track = 4  # UCS point track
+    point_track = 2  # UCS point track
     key = 'UCS'  # Key for UCS
 
     # Ensure the structure exists in the result_dict
@@ -289,16 +332,20 @@ def mobile_geomech(defaults):
         if st.session_state.lastdoi != st.session_state.doi and has_changed:
             st.session_state.outputdata[0], st.session_state.outputdata[1], st.session_state.outputdata[2], st.session_state.outputdata[3], st.session_state.outputdata[4], st.session_state.outputdata[5], st.session_state.outputdata[6],st.session_state.lastdoi = lsd.plotPPzhang(
                 st.session_state.wellobj, rhoappg=st.session_state.rhoappg, lamb=st.session_state.lamb,
-                ul_exp=st.session_state.ul_exp, ul_depth=st.session_state.ul_depth, a=st.session_state.a,
+                ul_exp=st.session_state.lamb if st.session_state.ul_depth == 0 else st.session_state.ul_exp,
+                ul_depth=st.session_state.ul_depth, a=st.session_state.a,
                 nu=st.session_state.nu, sfs=st.session_state.sfs, window=1, zulu=0, tango=20000,
                 dtml=st.session_state.dtml, dtmt=st.session_state.dtmt, water=st.session_state.water,
                 underbalancereject=st.session_state.underbalancereject, tecb=st.session_state.tecb,
-                doi=st.session_state.doi, lala=st.session_state.lala, lalb=st.session_state.lalb,
+                doi=0.0, lala=st.session_state.lala, lalb=st.session_state.lalb,
                 lalm=st.session_state.lalm, lale=st.session_state.lale, lall=st.session_state.lall,
                 horsuda=st.session_state.horsuda, horsude=st.session_state.horsude,
                 offset=st.session_state.offset, strike=st.session_state.strike, dip=st.session_state.dip, mudtemp=st.session_state.mudtemp,
                 mwvalues=mwvalues, forms=st.session_state.data_array[1],
                 flags=st.session_state.data_array[4], lithos=st.session_state.data_array[3],writeFile=False,attrib=attrib,aliasdict={key: [value] for key, value in st.session_state.alias.items()},
+                program_option=[300,st.session_state.program_option,0,0,0],
+                res0=st.session_state.res0, be=st.session_state.be, ne=st.session_state.ne,
+                dex0=st.session_state.dex0, de=st.session_state.de, nde=st.session_state.nde,
             )
             if st.session_state.outputdata[2] is not None:
                 detailed_analysis()
@@ -386,18 +433,23 @@ def mobile_geomech(defaults):
                     tgs,
                     result_dict,
                     {
-                        2: {'Pore Pressure Gradient':{'color': 'red', 'size': 12, 'symbol': 'arrow-right'},
+                        3: {'Pore Pressure Gradient':{'color': 'red', 'size': 12, 'symbol': 'arrow-right'},
                          'Fracture Gradient':{'color': 'blue', 'size': 12, 'symbol': 'arrow-left'}},
-                        3: {'Pore Pressure':{'color': 'orangered', 'size': 12, 'symbol': 'arrow-right'},
+                        4: {'Pore Pressure':{'color': 'orangered', 'size': 12, 'symbol': 'arrow-right'},
                          'Fracture Pressure':{'color': 'cornflowerblue', 'size': 12, 'symbol': 'arrow-left'}},
-                        4: {'UCS':{'color': 'green', 'size': 5, 'symbol': 'circle'}},
+                        2: {'UCS':{'color': 'green', 'size': 5, 'symbol': 'circle'}},
 
                     },
-                    6800,
+                    plotheight,
                     header_height = 200,
                     indexkey='TVDM'
                 )
                 
         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
+        fig.update_layout(
+                    dragmode=False,
+                    xaxis=dict(fixedrange=True),
+                    yaxis=dict(fixedrange=True)
+                )
         #fig.update_yaxes(range = [curves.index.max(),curves.index.min()],autorange=False)
         st.plotly_chart(fig, use_container_width=True)

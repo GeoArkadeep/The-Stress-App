@@ -249,7 +249,7 @@ def mobile_import():
                     with st.expander("Track Configuration", expanded=False):
                         num_tracks = st.number_input("Number of Tracks", min_value=1, max_value=6, value=len(default_tracks))
                         vert_height = st.number_input(
-                            "Set plot height in pixels", value=680, placeholder="How tall you want the plot?"
+                            "Set plot height in pixels", value=3000, placeholder="How tall you want the plot?"
                         )
                     
 
@@ -478,10 +478,17 @@ def mobile_import():
                     curve_properties,
                     track_grids,
                     None,None,
-                    vert_height
+                    vert_height,
+                    style='linear'
                 )
                 
-                fig.update_yaxes(row=2,range = [st.session_state.curve_data.index.max(),st.session_state.curve_data.index.min()],autorange=False)
+                #fig.update_yaxes(row=2,range = [st.session_state.curve_data.index.max(),st.session_state.curve_data.index.min()])
+                fig.update_layout(
+                    dragmode=False,
+                    xaxis=dict(fixedrange=True),
+                    yaxis=dict(fixedrange=True)
+                )
+
                 st.plotly_chart(fig, use_container_width=True)
                 #df = lsd.plotPPzhang(st.session_state.wellobj)
                 #df
