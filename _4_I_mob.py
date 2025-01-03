@@ -479,7 +479,9 @@ def mobile_import():
                     track_grids,
                     None,None,
                     vert_height,
-                    style='linear'
+                    style='linear',
+                    halftrack=0.35,
+                    gap=5
                 )
                 
                 #fig.update_yaxes(row=2,range = [st.session_state.curve_data.index.max(),st.session_state.curve_data.index.min()])

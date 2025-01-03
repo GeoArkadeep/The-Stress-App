@@ -501,7 +501,9 @@ else:
                             track_grids,
                             None,None,
                             vert_height,
-                            style='linear'
+                            style='linear',
+                            halftrack=0.25,
+                            depthtext='DEPTH<br>metres<br>MD<br>KB',gap=12
                         )
                         
                         #fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')

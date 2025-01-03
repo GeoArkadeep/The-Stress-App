@@ -464,7 +464,8 @@ if 'wellobj' in st.session_state:
                                     },
                                     680,
                                     header_height = 200,
-                                    indexkey='TVDM'
+                                    indexkey='TVDM',
+                                    halftrack=0.35,depthtext='DEPTH<br>metres<br>TVD<br>KB',gap=10
                                 )
                                 
                         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')

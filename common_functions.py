@@ -14,7 +14,7 @@ import pint
 from welly import Well
 import json
 
-def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_properties, track_grids, sparse_points=None, sparse_point_properties=None, vert_height=1000, header_height=150, indexkey='DEPT', style='hv'):
+def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_properties, track_grids, sparse_points=None, sparse_point_properties=None, vert_height=1000, header_height=150, indexkey='DEPT', style='hv',halftrack=0,depthtext='DEPTH<br>metres<br>MD<br>KB',gap=15):
     """
     Create a well log plot with multiple tracks sharing an inverted depth axis.
     Supports individual scaling, styling, and logarithmic transformation for each curve.
@@ -30,7 +30,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         yindex = curves[indexkey]
     except:
         yindex = curves.index.values
-    widths = [1, 0.35] + [1] * (num_tracks-1)
+    widths = [1, halftrack] + [1] * (num_tracks-1)
     # Create figure
     fig = make_subplots(
         rows=2,
@@ -41,7 +41,20 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         row_heights=[annotation_height, plot_height],
         column_widths=widths
     )
-    
+    fig.add_trace(
+                    go.Scattergl(
+                        x=np.zeros(len(yindex)),
+                        y=yindex,
+                        name='DEPT',
+                        line=dict(
+                            color='rgb(0,0,0,0)',
+                        ),
+                        line_shape=style,
+                        showlegend=False
+                    ),
+                    row=2,
+                    col=2
+                )
     # Plot curves and add annotations for each track
     for track_idx, track_curve_names in enumerate(track_curves):
         print(track_curve_names)
@@ -329,7 +342,7 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
         autorange="reversed",
         showticklabels=False
     )
-        # Then show them specifically for row 2, column 2
+    # Then show them specifically for row 2, column 2
     
     # Hide the annotation area y-axis
     fig.update_yaxes(
@@ -429,17 +442,46 @@ def create_well_log_plot(curves, track_curves, track_curve_ranges, curve_propert
     # Combine existing shapes with border shapes
     all_shapes = existing_shapes + border_shapes
     
+    
     # Update layout with all shapes
     fig.update_layout(shapes=all_shapes)
-    fig.update_yaxes(
-        row=2, 
-        col=1,
-        showticklabels=True,
-        ticks='outside',  # Make sure ticks are visible
-        side='right',      # Ensure labels are on the left side
-        tickmode='auto',  # Let Plotly automatically determine tick positions
-        showgrid=False    # Keep consistent with current design
-    )
+    if halftrack != 0:
+        fig.update_yaxes(
+            row=2, 
+            col=2,
+            showticklabels=True,
+            ticklabelposition='inside',
+            #ticks='outside',  # Make sure ticks are visible
+            side='right',
+            ticklabelstandoff=gap,
+            #nticks=50,
+            #tick0=0,
+            #ticklabelstep=10
+            #tickmode='auto',  # Let Plotly automatically determine tick positions
+            zeroline=False,
+            showgrid=False,    # Keep consistent with current design
+        )
+        # Add multiline text to row 1, column 2
+        fig.add_annotation(
+            row=1,
+            col=2,
+            text=depthtext,
+            showarrow=False,
+            font=dict(
+                size=12,
+                color='grey'
+            ),
+        )
+    else:
+        fig.update_yaxes(
+            row=2, 
+            col=1,
+            showticklabels=True,
+            #ticks='outside',  # Make sure ticks are visible
+            side='left',      # Ensure labels are on the left side
+            #tickmode='auto',  # Let Plotly automatically determine tick positions
+            #showgrid=False    # Keep consistent with current design
+        )
     
     return fig
 

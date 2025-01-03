@@ -251,7 +251,7 @@ def mobile_geomech(defaults):
                                   format="%.2f", 
                                   key="mudtemp_input")
         plotheight = st.number_input("Plot Height in pixels", 
-                                  value=2000)
+                                  value=3000)
 
     st.write("Constraints")
     st.session_state.constraints = st.data_editor(
@@ -442,7 +442,10 @@ def mobile_geomech(defaults):
                     },
                     plotheight,
                     header_height = 200,
-                    indexkey='TVDM'
+                    indexkey='TVDM',
+                    halftrack=0.65,
+                    depthtext='DEPTH<br>metres<br>TVD<br>KB',
+                    gap=7
                 )
                 
         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',plot_bgcolor='rgba(0,0,0,0)')
